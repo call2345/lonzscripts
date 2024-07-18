@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lonz Script</title>
+    <style>
+        /* CSS styles for the terminal interface */
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #000;
+            color: #00FF00; /* Green text */
+        }
+        #welcomeMessage {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        #terminal {
+            width: 80%;
+            max-width: 800px;
+            height: 70%; /* Terminal height */
+            background-color: #000;
+            border: 2px solid #00FF00; /* Green border */
+            padding: 10px;
+            overflow-y: auto; /* Allow scrolling */
+        }
+        #terminalOutput {
+            white-space: pre-wrap; /* Preserve formatting */
+        }
+        #terminalInput {
+            width: 100%;
+            border: none;
+            background: none;
+            color: inherit;
+            outline: none;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div id="welcomeMessage">Type 'help' to get started.</div>
+    <div id="terminal">
+        <div id="terminalOutput"></div>
+        <input type="text" id="terminalInput" autofocus>
+    </div>
+    <script>
+        // JavaScript code for handling commands
+        // Define commands and their functionalities
+        const commands = {
+            help: 'Displays all available commands with descriptions.',
+            echo: 'Repeats the input text.',
+            date: 'Displays the current date and time.',
+            support: 'Shows a clickable link to join our Discord server.',
+            suggest: 'Submit a command idea to lyharry31@gmail.com.'
+        };
+
+        // Function to handle user input
+        function handleCommand(input) {
+            const args = input.split(' ');
+            const command = args[0];
+
+            switch (command) {
+                case 'help':
+                    showHelp();
+                    break;
+                case 'echo':
+                    echoCommand(args.slice(1).join(' '));
+                    break;
+                case 'date':
+                    displayDate();
+                    break;
+                case 'support':
+                    showSupportLink();
+                    break;
+                case 'suggest':
+                    const suggestion = args.slice(1).join(' ');
+                    if (suggestion) {
+                        submitSuggestion(suggestion);
+                    } else {
+                        terminalOutput.innerHTML += `\n$ suggest\nPlease provide a command idea to submit.`;
+                    }
+                    break;
+                default:
+                    terminalOutput.innerHTML += `\n$ ${input}\nCommand not found: ${command}`;
+            }
+        }
+
+        // Function to display help information
+        function showHelp() {
+            let helpText = 'Available commands:\n';
+            for (const cmd in commands) {
+                helpText += `${cmd}: ${commands[cmd]}\n`;
+            }
+            terminalOutput.innerHTML += `\n$ help\n${helpText}`;
+        }
+
+        // Function to echo back user input
+        function echoCommand(text) {
+            terminalOutput.innerHTML += `\n$ echo ${text}\n${text}`;
+        }
+
+        // Function to display current date and time
+        function displayDate() {
+            const now = new Date();
+            const dateStr = now.toDateString();
+            const timeStr = now.toLocaleTimeString();
+            terminalOutput.innerHTML += `\n$ date\nCurrent date: ${dateStr}\nCurrent time: ${timeStr}`;
+        }
+
+        // Function to display Discord server support link
+        function showSupportLink() {
+            const discordLink = 'https://discord.gg/pgQ83yEyFb';
+            terminalOutput.innerHTML += `\n$ support\nJoin our Discord server: <a href="${discordLink}" target="_blank">${discordLink}</a>`;
+        }
+
+        // Function to submit command suggestion via email
+        function submitSuggestion(suggestion) {
+            const email = 'lyharry31@gmail.com';
+            const subject = 'Command Suggestion';
+            const body = `Command Suggestion:\n\n${suggestion}`;
+            const mailtoLink = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+            // Open default email client with pre-filled suggestion
+            window.location.href = mailtoLink;
+        }
+
+        const terminalInput = document.getElementById('terminalInput');
+        const terminalOutput = document.getElementById('terminalOutput');
+
+        // Event listener for handling user input
+        terminalInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                const input = terminalInput.value.trim(); // Trim whitespace
+                if (input !== '') {
+                    handleCommand(input);
+                    terminalInput.value = '';
+                    terminalOutput.scrollTop = terminalOutput.scrollHeight; // Auto scroll to bottom
+                }
+            }
+        });
+    </script>
+</body>
+</html>
